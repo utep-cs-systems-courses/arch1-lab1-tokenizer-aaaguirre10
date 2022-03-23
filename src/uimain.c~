@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "tokenizer.h"
+#include "history.h"
+
+#define MAX_STR 100
+
+int main()
+{
+  char userIn[MAX_STR], word[MAX_STR];
+  char *pointer, *output, **tokenizer;
+  int isSpace, isNonSpace, wordCount, terminate;
+  
+  List *testList = init_history();
+  terminate = wordCount = 0;
+  pointer = &word[0];
+
+  printf("Type a word to echo back:\n");
+  putchar('>');
+  fgets(userIn, MAX_STR, stdin);
+  printf("%s\n", userIn);
+
+  while(terminate == 0)
+    {
+      printf("<------------------------------------\nType word to tokenize, !desired ID number to" " view a specific existing word, or e to exit:\n");
+      fgets(word, MAX_STR, stdin);
+
+      if(word[0] == 'e' || word[0] == 'E')
+	{
+	  printf("Program terminatad");
+	  terminate = 1;
+	  break;
+	}
+      else if(word[0] == '!')
+	{
+	  int idx = word[1] - '0';
+	  printf("History at [%c]: %s\n", word[1], get_history(testList, idx));
+	}
+      else
+	{
+	  printf("\nGiven phrase: %s", word);
+
+	  //find the start of the word in given phrase
+	  output = word_start(pointer);
+	  printf("Start of word: %c\n", *output);
+
+	  //find the end of the word in given phrase
+	  output = word_terminator(pointer);
+	  printf("End of Word: %c\n", *output);
+
+	  wordCount = count_words(pointer);
+	  printf("Number of words: %d\n", wordCount);
+
+	  output = copy_str(pointer, 4);
+	  printf("New word copy: %s,\n", output);
+
+	  tokenizer = tokenize(pointer);
+
+	  printf("\n----Printing tokens-----\n");
+	  print_tokens(tokenizer);
+
+	  add_history(testList, word);
+
+	  printf("\n----Current token history-----\n");
+	  print_history(testList);
+
+	  free_tokens(tokenizer);
+	}
+    }
+}
